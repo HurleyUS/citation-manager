@@ -1,0 +1,19 @@
+{
+  "repoId": "r174aba9m4vcwe3m1csq91vdcs87nw4a",
+  "owner": "uncap_user",
+  "name": "citation-manager",
+  "originType": "native",
+  "legacy": {
+    "hasGitHub": true,
+    "hasGit": true
+  },
+  "defaults": {
+    "file": "public",
+    "fragment": "public",
+    "issue": "public",
+    "pullRequest": "public",
+    "branch": "public",
+    "comment": "public"
+  },
+  "headSha": ""
+}
