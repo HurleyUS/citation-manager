@@ -7,7 +7,7 @@ interface User {
 
 /**
  * Simple development auth hook
- * In production, this would be replaced with Clerk/similar auth provider
+ * App-owned auth via /api/auth (Clerk deliberately not wired)
  */
 export function useAuth() {
   const [user, setUser] = useState<User | null>(null);

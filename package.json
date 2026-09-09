@@ -21,7 +21,6 @@
     "ship": "bun scripts/ship.mts"
   },
   "dependencies": {
-    "@clerk/nextjs": "^7.3.3",
     "@convex-dev/auth": "^0.0.92",
     "argon2": "^0.44.0",
     "convex": "^1.38.0",
