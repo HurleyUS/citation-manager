@@ -16,8 +16,8 @@ See [GitHub Issues](https://github.com/michaelmonetized/citation-manager/issues)
 - **Authentication:** Convex Auth (passwordless signup/login)
 - **Backend:** Convex (multi-tenant, real-time)
 - **Infrastructure:** Vercel, Convex Cloud
-- **Payments:** Stripe (TBD for Phase 2)
-- **Analytics:** PostHog (TBD for Phase 2)
+- **Payments:** Not wired (Stripe remains a later roadmap item; not in package.json)
+- **Analytics / error tracking:** Not wired (no PostHog/Sentry integration)
 
 ## Quick Start
 
@@ -91,7 +91,7 @@ bun run dev
 
 ### Phase 4: Monetization (Ongoing)
 
-- [ ] Stripe integration (subscription billing)
+- [ ] Stripe integration (subscription billing) — roadmap only, not claimed as shipped
 - [ ] Freemium model (2 locations free, $99/mo for unlimited)
 - [ ] API access for partners
 - [ ] Marketplace (partner integrations)
