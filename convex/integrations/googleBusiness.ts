@@ -1,4 +1,8 @@
 import { v } from "convex/values";
+import {
+  type GoogleServiceAccount,
+  signGoogleServiceAccountJwt,
+} from "./googleJwt";
 
 /**
  * Google Business Profile API Integration
@@ -29,11 +33,7 @@ interface GoogleBusinessLocation {
   };
 }
 
-/**
- * Generate JWT token from Google service account
- * Uses service account JSON stored in GOOGLE_SERVICE_ACCOUNT_JSON env var
- */
-const generateGoogleJWT = (): string => {
+function parseServiceAccount(): GoogleServiceAccount {
   const serviceAccountJson = process.env.GOOGLE_SERVICE_ACCOUNT_JSON;
   if (!serviceAccountJson) {
     throw new Error(
@@ -42,40 +42,59 @@ const generateGoogleJWT = (): string => {
     );
   }
 
+  let parsed: unknown;
   try {
-    // Note: In production, use a proper JWT library like 'jsonwebtoken'
-    // This is a placeholder - actual implementation would need:
-    // import jwt from 'jsonwebtoken';
-    // const account = JSON.parse(serviceAccountJson);
-    // return jwt.sign({ scope: 'https://www.googleapis.com/auth/business.manage' }, account.private_key, { algorithm: 'RS256' });
-
-    // For now, return a placeholder that would be replaced
-    const account = JSON.parse(serviceAccountJson);
-    return `Bearer ${account.type}:${account.project_id}`;
+    parsed = JSON.parse(serviceAccountJson);
   } catch (error) {
     throw new Error("Failed to parse GOOGLE_SERVICE_ACCOUNT_JSON: " + String(error));
   }
-};
+
+  if (!parsed || typeof parsed !== "object") {
+    throw new Error("GOOGLE_SERVICE_ACCOUNT_JSON must be a JSON object");
+  }
+
+  const account = parsed as Partial<GoogleServiceAccount>;
+  if (typeof account.client_email !== "string" || typeof account.private_key !== "string") {
+    throw new Error("GOOGLE_SERVICE_ACCOUNT_JSON must include client_email and private_key");
+  }
+
+  return account as GoogleServiceAccount;
+}
+
+async function exchangeGoogleJwtForAccessToken(jwt: string): Promise<string> {
+  const response = await fetch("https://oauth2.googleapis.com/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: new URLSearchParams({
+      grant_type: "urn:ietf:params:oauth:grant-type:jwt-bearer",
+      assertion: jwt,
+    }),
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Google token exchange failed (${response.status}): ${text}`);
+  }
+
+  const data = (await response.json()) as { access_token?: string };
+  if (!data.access_token) {
+    throw new Error("Google token exchange returned no access_token");
+  }
+  return data.access_token;
+}
 
 /**
- * Get pre-configured Google access token from env
- * Falls back to JWT generation if direct token not provided
+ * Prefer GOOGLE_ACCESS_TOKEN. Otherwise sign a real service-account JWT
+ * and exchange it for an access token. Never invent a bearer string.
  */
-const getGoogleAccessToken = (): string => {
+const getGoogleAccessToken = async (): Promise<string> => {
   const token = process.env.GOOGLE_ACCESS_TOKEN;
   if (token) {
     return token;
   }
 
-  // Try JWT generation as fallback
-  try {
-    return generateGoogleJWT();
-  } catch {
-    throw new Error(
-      "GOOGLE_ACCESS_TOKEN environment variable not set, and GOOGLE_SERVICE_ACCOUNT_JSON invalid. " +
-        "Provide either a valid access token or service account JSON. See .env.example.",
-    );
-  }
+  const jwt = await signGoogleServiceAccountJwt(parseServiceAccount());
+  return await exchangeGoogleJwtForAccessToken(jwt);
 };
 
 /**
@@ -153,7 +172,7 @@ export const submitGoogleBusiness = async (
   },
 ): Promise<{ googleLocationId: string; success: boolean; error?: string }> => {
   try {
-    const accessToken = getGoogleAccessToken();
+    const accessToken = await getGoogleAccessToken();
     const formattedData = mapLocationToGoogleFormat(locationData);
 
     const result = await retryWithBackoff(async () => {
@@ -214,7 +233,7 @@ export const verifyGoogleBusinessSubmission = async (
   error?: string;
 }> => {
   try {
-    const accessToken = getGoogleAccessToken();
+    const accessToken = await getGoogleAccessToken();
 
     const response = await retryWithBackoff(async () => {
       return await fetch(
