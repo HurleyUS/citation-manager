@@ -4,6 +4,9 @@ Manage business citations across 958+ online directories. A modern, API-first al
 
 ## Status
 
+> **Honesty:** Stripe billing is **not** implemented. Pricing tiers below are planned targets only. Do not treat them as live checkout.
+
+
 **Phase 2A: 100% Complete ✅** — API Integrations (Google, Yelp, Facebook) shipped with rate limiting, retry logic, and full test suite. 958-directory registry loaded. Ready for Phase 2B manual testing.
 
 **Latest:** Phase 2A shipped 2026-04-01 ([Issue #12](https://github.com/michaelmonetized/citation-manager/issues/12), [Issue #15](https://github.com/michaelmonetized/citation-manager/issues/15))
@@ -16,7 +19,7 @@ See [GitHub Issues](https://github.com/michaelmonetized/citation-manager/issues)
 - **Authentication:** Convex Auth (passwordless signup/login)
 - **Backend:** Convex (multi-tenant, real-time)
 - **Infrastructure:** Vercel, Convex Cloud
-- **Payments:** Not wired (Stripe remains a later roadmap item; not in package.json)
+- **Payments:** Stripe — **planned (Phase 4)**; not wired at HEAD (no Stripe dependency or keys)
 - **Analytics / error tracking:** Not wired (no PostHog/Sentry integration)
 
 ## Quick Start
@@ -89,14 +92,14 @@ bun run dev
 - [ ] Customer support tools
 - [ ] Production security audit
 
-### Phase 4: Monetization (Ongoing)
+### Phase 4: Monetization (Planned — Stripe not started)
 
 - [ ] Stripe integration (subscription billing) — roadmap only, not claimed as shipped
 - [ ] Freemium model (2 locations free, $99/mo for unlimited)
 - [ ] API access for partners
 - [ ] Marketplace (partner integrations)
 
-## Pricing (Post-Phase 1)
+## Planned pricing (Stripe not wired — aspirational only)
 
 - **Starter:** Free, 1 location, 50 submissions/month (popular directories only)
 - **Professional:** $99/month, 5 locations, unlimited submissions to 500+ directories
