@@ -36,3 +36,4 @@ skills
 
 # Finder (MacOS) folder config
 .DS_Store
+.clerk/

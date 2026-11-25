@@ -16,7 +16,7 @@ export default function LocationsPage() {
 
   const [name, setName] = useState("HustleLaunch");
   const [address, setAddress] = useState("146 Saints Place");
-  const [phone, setPhone] = useState("828-269-8280");
+  const [phone, setPhone] = useState("828-593-1935");
   const [website, setWebsite] = useState("https://www.hustlelaunch.com");
   const [city, setCity] = useState("Canton");
   const [state, setState] = useState("NC");
